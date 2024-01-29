@@ -51,7 +51,7 @@
   &.unstyled {
     overflow: visible;
     background-color: transparent !important;
-    border: none !important;
+    /* border: none !important; */
   }
 
   &.horizontal {
