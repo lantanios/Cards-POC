@@ -1,3 +1,5 @@
+// just a simple function that generates a shuffeled deck of cards=
+
 export function getDeckOfCards() {
   const suits = ['♠', '♦', '♣', '♥'];
   const values = [

@@ -116,6 +116,7 @@ export function Sortable({
     () => initialItems ?? createRange<UniqueIdentifier>(itemCount, (index) => index + 1)
   );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+  // this code is to make it possible to drag and drop with keyboard and touch
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint,
@@ -134,6 +135,7 @@ export function Sortable({
   const getPosition = (id: UniqueIdentifier) => getIndex(id) + 1;
   const activeIndex = activeId ? getIndex(activeId) : -1;
   const handleRemove = removable ? (id: UniqueIdentifier) => setItems((items) => items.filter((item) => item !== id)) : undefined;
+  // this code is for screen readers it's a bit big but it's neccessary
   const announcements: Announcements = {
     onDragStart({ active: { id } }) {
       return `Picked up sortable item ${String(id)}. Sortable item ${id} is in position ${getPosition(id)} of ${items.length}`;
@@ -188,7 +190,7 @@ export function Sortable({
       }}
       onDragEnd={({ over }) => {
         setActiveId(null);
-
+        // if it's collided with another item just switch them
         if (over) {
           const overIndex = getIndex(over.id);
           if (activeIndex !== overIndex) {

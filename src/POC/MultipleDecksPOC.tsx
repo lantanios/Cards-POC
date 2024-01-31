@@ -1,44 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { verticalListSortingStrategy, rectSortingStrategy } from "@dnd-kit/sortable";
-import { Sortable } from "./comps/Sortable";
+import { useEffect, useState } from "react";
+import { rectSortingStrategy } from "@dnd-kit/sortable";
 import { MultipleContainers } from "./comps/MultipleContainers";
 import { PlayingCard } from "./comps/PlayingCard";
-import { getDeckOfCards } from "./comps/getDeckOfCards";
-
-// export default {
-//   title: "Examples/2D Games/Playing Cards",
-// };
-
-export const SingleDeck = () => {
-  const [deck] = useState(getDeckOfCards);
-
-  return (
-    <div style={{ position: "relative", marginTop: 50, paddingBottom: 250 }}>
-      <Sortable
-        strategy={verticalListSortingStrategy}
-        items={deck.map(({ suit, value }) => `${value}${suit}`)}
-        renderItem={({ dragging, value, dragOverlay, listeners, ref, style, index, sorting, transform, transition }: any) => (
-          <PlayingCard
-            value={value}
-            isDragging={dragging}
-            isPickedUp={dragOverlay}
-            isSorting={sorting}
-            ref={ref}
-            style={style}
-            index={index}
-            transform={transform}
-            transition={transition}
-            {...listeners}
-          />
-        )}
-        getItemStyles={({ index, overIndex, isDragging, isDragOverlay }) => ({
-          zIndex: isDragging ? deck.length - overIndex : deck.length - index,
-          opacity: isDragging && !isDragOverlay ? 0.3 : undefined,
-        })}
-      />
-    </div>
-  );
-};
+import { getDeckOfCards } from "./functions/getDeckOfCards";
 
 function stringifyDeck(
   deck: {
@@ -53,6 +17,7 @@ function stringifyDeck(
 export const MultipleDecksPOC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [decks] = useState(() => {
+    // here we put the deck in a state but its just a try so we don't want the 52 cards so we only get 13 of the same colors
     const deck = getDeckOfCards();
     // const deckA = deck.slice(0, 13);
     // const deckB = deck.slice(13, 26);
@@ -68,7 +33,7 @@ export const MultipleDecksPOC = () => {
   });
 
   useEffect(() => {
-    setTimeout(() => setIsMounted(true), 2500);
+    setIsMounted(true)
   }, []);
 
   return (
@@ -102,7 +67,7 @@ export const MultipleDecksPOC = () => {
         const deck = decks[containerId as keyof typeof decks] || [];
 
         return {
-          zIndex: isDragOverlay ? undefined : isDragging ? deck.length - overIndex : deck.length - index,
+          zIndex: deck.length - index,
         };
       }}
       minimal

@@ -1,11 +1,6 @@
 import React, { forwardRef } from "react";
 import classNames from "classnames";
-
-// import { Handle, Remove } from "../Item";
-
 import styles from "./Container.module.css";
-import { Handle } from "./Handle";
-import { Remove } from "./Remove";
 
 export interface ContainerProps {
   children: React.ReactNode;
@@ -43,10 +38,9 @@ export const Container = forwardRef<any, ContainerProps>(
     }: ContainerProps,
     ref
   ) => {
-    const Component = onClick ? "button" : "div";
 
     return (
-      <Component
+      <div
         {...props}
         ref={ref}
         style={
@@ -61,24 +55,14 @@ export const Container = forwardRef<any, ContainerProps>(
           unstyled && styles.unstyled,
           horizontal && styles.horizontal,
           hover && styles.hover,
-          placeholder && styles.placeholder,
           scrollable && styles.scrollable,
           shadow && styles.shadow
         )}
         onClick={onClick}
         tabIndex={onClick ? 0 : undefined}
       >
-        {label ? (
-          <div className={styles.Header}>
-            {label}
-            <div className={styles.Actions}>
-              {onRemove ? <Remove onClick={onRemove} /> : undefined}
-              <Handle {...handleProps} />
-            </div>
-          </div>
-        ) : null}
-        {placeholder ? children : <ul>{children}</ul>}
-      </Component>
+        <ul>{children}</ul>
+      </div>
     );
   }
 );

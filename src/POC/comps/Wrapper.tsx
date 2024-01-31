@@ -1,7 +1,5 @@
-import React from 'react';
-import classNames from 'classnames';
-
-import styles from './Wrapper.module.css';
+import React from "react";
+import styled from "@emotion/styled";
 
 interface Props {
   children: React.ReactNode;
@@ -9,13 +7,13 @@ interface Props {
   style?: React.CSSProperties;
 }
 
-export function Wrapper({children, center, style}: Props) {
-  return (
-    <div
-      className={classNames(styles.Wrapper, center && styles.center)}
-      style={style}
-    >
-      {children}
-    </div>
-  );
+export function Wrapper({ children, center, style }: Props) {
+  const Wrapper = styled.div`
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    justify-content: ${() => center ? "center" : "flex-start"};
+  `;
+  return <Wrapper style={style}>{children}</Wrapper>;
 }
