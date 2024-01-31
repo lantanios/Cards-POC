@@ -41,9 +41,9 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
   ) => {
     const Card = styled.div`
       position: relative;
-      width: 140px;
+      /* width: 140px;
       height: 180px;
-      margin-bottom: -145px;
+      margin-bottom: -145px; */
     `;
 
     const PlayingCard = styled.div`
@@ -52,17 +52,18 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
       height: 300px;
       margin-left: 140px;
       background-color: #fff;
-      box-shadow:1px 1px 0 1px #f9f9fb, -1px 0 28px 0 rgba(34, 33, 81, 0.01),
-      54px 54px 28px -10px rgba(34, 33, 81, 0.15);
-      transform-style: preserve-3d;
+      /* box-shadow:1px 1px 0 1px #f9f9fb, -1px 0 28px 0 rgba(34, 33, 81, 0.01),
+      54px 54px 28px -10px rgba(34, 33, 81, 0.15); */
+      border: 2px solid #000000;
+      /* transform-style: preserve-3d; */
       border-radius: 24px;
       font-size: 25px;
       font-family: 'Roboto Slab', Helvetica, sans-serif;
       user-select: none;
-      transform-origin: 0 0;
-      transform: scale(var(--scale, 1)) translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
-        rotateX(60deg) rotateZ(33deg);
-      transition: var(--transition);
+      /* transform-origin: 0 0; */
+      /* transform: scale(var(--scale, 1)) translate3d(var(--translate-x, 0), var(--translate-y, 0), 0)
+        rotateX(60deg) rotateZ(33deg); */
+      /* transition: var(--transition); */
     
       &:hover:not(.pickedUp) {
         --translate-x: 5px;
@@ -88,7 +89,7 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
     }
     
     & > sup {
-      left: 20px;
+      /* left: 20px; */
       top: 20px;
     }
     
@@ -99,22 +100,22 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
     `
     return (
       <Card
-        style={
-          {
-            "--index": index,
-            "--transition": transition,
-            zIndex: style?.zIndex,
-          } as React.CSSProperties
-        }
+        // style={
+        //   {
+        //     "--index": index,
+        //     "--transition": transition,
+        //     zIndex: style?.zIndex,
+        //   } as React.CSSProperties
+        // }
         ref={ref}
       >
         <PlayingCard
           style={
             {
-              ...style,
+              // ...style,
               // "--scale": isPickedUp ? 1.075 : undefined,
               color: getSuitColor(value),
-              zIndex: undefined,
+              // zIndex: undefined,
             } as React.CSSProperties
           }
           tabIndex={0}
