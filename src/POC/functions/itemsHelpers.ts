@@ -14,5 +14,3 @@ export function getColor(id: UniqueIdentifier) {
 
   return undefined;
 }
-
-

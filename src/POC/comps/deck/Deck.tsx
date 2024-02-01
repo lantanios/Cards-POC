@@ -12,7 +12,18 @@ export const SingleDeck = () => {
       <Sortable
         strategy={verticalListSortingStrategy}
         items={deck.map(({ suit, value }) => `${value}${suit}`)}
-        renderItem={({ dragging, value, dragOverlay, listeners, ref, style, index, sorting, transform, transition }: any) => (
+        renderItem={({
+          dragging,
+          value,
+          dragOverlay,
+          listeners,
+          ref,
+          style,
+          index,
+          sorting,
+          transform,
+          transition,
+        }: any) => (
           <PlayingCard
             value={value}
             isDragging={dragging}
@@ -26,8 +37,7 @@ export const SingleDeck = () => {
             {...listeners}
           />
         )}
-        getItemStyles={({ index, overIndex, isDragging, isDragOverlay }) => ({
-          zIndex: isDragging ? deck.length - overIndex : deck.length - index,
+        getItemStyles={({ isDragging, isDragOverlay }) => ({
           opacity: isDragging && !isDragOverlay ? 0.3 : undefined,
         })}
       />

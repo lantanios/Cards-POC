@@ -1,11 +1,14 @@
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { Container, ContainerProps } from "../Container";
-import { AnimateLayoutChanges, defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
+import {
+  AnimateLayoutChanges,
+  defaultAnimateLayoutChanges,
+  useSortable,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-
-const animateLayoutChanges: AnimateLayoutChanges = (args) => defaultAnimateLayoutChanges({ ...args, wasDragging: true });
-
+const animateLayoutChanges: AnimateLayoutChanges = (args) =>
+  defaultAnimateLayoutChanges({ ...args, wasDragging: true });
 
 export function DroppableContainer({
   children,
@@ -21,7 +24,16 @@ export function DroppableContainer({
   items: UniqueIdentifier[];
   style?: React.CSSProperties;
 }) {
-  const { active, attributes, isDragging, listeners, over, setNodeRef, transition, transform } = useSortable({
+  const {
+    active,
+    attributes,
+    isDragging,
+    listeners,
+    over,
+    setNodeRef,
+    transition,
+    transform,
+  } = useSortable({
     id,
     data: {
       type: "container",
@@ -29,7 +41,10 @@ export function DroppableContainer({
     },
     animateLayoutChanges,
   });
-  const isOverContainer = over ? (id === over.id && active?.data.current?.type !== "container") || items.includes(over.id) : false;
+  const isOverContainer = over
+    ? (id === over.id && active?.data.current?.type !== "container") ||
+      items.includes(over.id)
+    : false;
 
   return (
     <Container

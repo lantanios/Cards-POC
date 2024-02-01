@@ -1,27 +1,27 @@
 // just a simple function that generates a shuffeled deck of cards=
 
 export function getDeckOfCards() {
-  const suits = ['♠', '♦', '♣', '♥'];
+  const suits = ["♠", "♦", "♣", "♥"];
   const values = [
-    'A',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    'J',
-    'Q',
-    'K',
+    "A",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "J",
+    "Q",
+    "K",
   ];
   const deck = [];
 
   for (var i = 0; i < suits.length; i++) {
     for (var x = 0; x < values.length; x++) {
-      var card = {value: values[x], suit: suits[i]};
+      var card = { value: values[x], suit: suits[i] };
       deck.push(card);
     }
   }
@@ -43,8 +43,8 @@ export function shuffle(items: any[]) {
 }
 
 export function getSuitColor(value: string) {
-  if (value.includes('♥') || value.includes('♦')) {
-    return '#f44336';
+  if (value.includes("♥") || value.includes("♦")) {
+    return "#f44336";
   }
 
   return undefined;

@@ -66,7 +66,12 @@ export interface Props {
     overIndex: number;
     isDragging: boolean;
   }): React.CSSProperties;
-  wrapperStyle?(args: { active: Pick<Active, "id"> | null; index: number; isDragging: boolean; id: UniqueIdentifier }): React.CSSProperties;
+  wrapperStyle?(args: {
+    active: Pick<Active, "id"> | null;
+    index: number;
+    isDragging: boolean;
+    id: UniqueIdentifier;
+  }): React.CSSProperties;
   isDisabled?(id: UniqueIdentifier): boolean;
 }
 
@@ -113,7 +118,9 @@ export function Sortable({
   wrapperStyle = () => ({}),
 }: Props) {
   const [items, setItems] = useState<UniqueIdentifier[]>(
-    () => initialItems ?? createRange<UniqueIdentifier>(itemCount, (index) => index + 1)
+    () =>
+      initialItems ??
+      createRange<UniqueIdentifier>(itemCount, (index) => index + 1)
   );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   // this code is to make it possible to drag and drop with keyboard and touch
@@ -134,11 +141,18 @@ export function Sortable({
   const getIndex = (id: UniqueIdentifier) => items.indexOf(id);
   const getPosition = (id: UniqueIdentifier) => getIndex(id) + 1;
   const activeIndex = activeId ? getIndex(activeId) : -1;
-  const handleRemove = removable ? (id: UniqueIdentifier) => setItems((items) => items.filter((item) => item !== id)) : undefined;
+  const handleRemove = removable
+    ? (id: UniqueIdentifier) =>
+        setItems((items) => items.filter((item) => item !== id))
+    : undefined;
   // this code is for screen readers it's a bit big but it's neccessary
   const announcements: Announcements = {
     onDragStart({ active: { id } }) {
-      return `Picked up sortable item ${String(id)}. Sortable item ${id} is in position ${getPosition(id)} of ${items.length}`;
+      return `Picked up sortable item ${String(
+        id
+      )}. Sortable item ${id} is in position ${getPosition(id)} of ${
+        items.length
+      }`;
     },
     onDragOver({ active, over }) {
       // In this specific use-case, the picked up item's `id` is always the same as the first `over` id.
@@ -150,20 +164,26 @@ export function Sortable({
       }
 
       if (over) {
-        return `Sortable item ${active.id} was moved into position ${getPosition(over.id)} of ${items.length}`;
+        return `Sortable item ${
+          active.id
+        } was moved into position ${getPosition(over.id)} of ${items.length}`;
       }
 
       return;
     },
     onDragEnd({ active, over }) {
       if (over) {
-        return `Sortable item ${active.id} was dropped at position ${getPosition(over.id)} of ${items.length}`;
+        return `Sortable item ${
+          active.id
+        } was dropped at position ${getPosition(over.id)} of ${items.length}`;
       }
 
       return;
     },
     onDragCancel({ active: { id } }) {
-      return `Sorting was cancelled. Sortable item ${id} was dropped and returned to position ${getPosition(id)} of ${items.length}.`;
+      return `Sorting was cancelled. Sortable item ${id} was dropped and returned to position ${getPosition(
+        id
+      )} of ${items.length}.`;
     },
   };
 
@@ -226,7 +246,10 @@ export function Sortable({
       </Wrapper>
       {useDragOverlay
         ? createPortal(
-            <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
+            <DragOverlay
+              adjustScale={adjustScale}
+              dropAnimation={dropAnimation}
+            >
               {activeId ? (
                 <Item
                   value={items[activeIndex]}
@@ -284,13 +307,23 @@ export function SortableItem({
   useDragOverlay,
   wrapperStyle,
 }: SortableItemProps) {
-  const { active, attributes, isDragging, isSorting, listeners, overIndex, setNodeRef, setActivatorNodeRef, transform, transition } =
-    useSortable({
-      id,
-      animateLayoutChanges,
-      disabled,
-      getNewIndex,
-    });
+  const {
+    active,
+    attributes,
+    isDragging,
+    isSorting,
+    listeners,
+    overIndex,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+  } = useSortable({
+    id,
+    animateLayoutChanges,
+    disabled,
+    getNewIndex,
+  });
 
   return (
     <Item

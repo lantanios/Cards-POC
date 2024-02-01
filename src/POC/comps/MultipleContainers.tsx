@@ -1,4 +1,4 @@
-import React, {  useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   CancelDrop,
@@ -31,7 +31,6 @@ import { DroppableContainer } from "./container/DropableContainer";
 import { getColor } from "../functions/itemsHelpers";
 import { SortableItem } from "./sortableItem/SortableItem";
 import { DraggableItem } from "./draggableItem/DraggableItem";
-
 
 const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
@@ -73,7 +72,6 @@ interface Props {
   vertical?: boolean;
 }
 
-
 export function MultipleContainers({
   adjustScale = false,
   itemCount = 3,
@@ -98,7 +96,9 @@ export function MultipleContainers({
         D: createRange(itemCount, (index) => `D${index + 1}`),
       }
   );
-  const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[]);
+  const [containers, setContainers] = useState(
+    Object.keys(items) as UniqueIdentifier[]
+  );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
   const isSortingContainer = activeId ? containers.includes(activeId) : false;
@@ -163,7 +163,11 @@ export function MultipleContainers({
       onDragOver={({ active, over }) => {
         const overId = over?.id;
 
-        if (overId == null || active.id in items || overId.toString().includes('C')) {
+        if (
+          overId == null ||
+          active.id in items ||
+          overId.toString().includes("C")
+        ) {
           return;
         }
         console.log("@#---over", over);
@@ -187,29 +191,38 @@ export function MultipleContainers({
               newIndex = overItems.length + 1;
             } else {
               const isBelowOverItem =
-                over && active.rect.current.translated && active.rect.current.translated.top > over.rect.top + over.rect.height;
+                over &&
+                active.rect.current.translated &&
+                active.rect.current.translated.top >
+                  over.rect.top + over.rect.height;
 
               const modifier = isBelowOverItem ? 1 : 0;
 
-              newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+              newIndex =
+                overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
             }
 
             recentlyMovedToNewContainer.current = true;
 
             return {
               ...items,
-              [activeContainer]: items[activeContainer].filter((item) => item !== active.id),
+              [activeContainer]: items[activeContainer].filter(
+                (item) => item !== active.id
+              ),
               [overContainer]: [
                 ...items[overContainer].slice(0, newIndex),
                 items[activeContainer][activeIndex],
-                ...items[overContainer].slice(newIndex, items[overContainer].length),
+                ...items[overContainer].slice(
+                  newIndex,
+                  items[overContainer].length
+                ),
               ],
             };
           });
         }
       }}
       onDragEnd={({ active, over }) => {
-        if(over?.id === 'C') {
+        if (over?.id === "C") {
           return;
         }
         if (active.id in items && over?.id) {
@@ -244,7 +257,11 @@ export function MultipleContainers({
           if (activeIndex !== overIndex) {
             setItems((items) => ({
               ...items,
-              [overContainer]: arrayMove(items[overContainer], activeIndex, overIndex),
+              [overContainer]: arrayMove(
+                items[overContainer],
+                activeIndex,
+                overIndex
+              ),
             }));
           }
         }
@@ -264,66 +281,69 @@ export function MultipleContainers({
         }}
       >
         <SortableContext
-          items={['D']}
-          strategy={vertical ? verticalListSortingStrategy : horizontalListSortingStrategy}
+          items={["D"]}
+          strategy={
+            vertical
+              ? verticalListSortingStrategy
+              : horizontalListSortingStrategy
+          }
         >
-
-            <DroppableContainer
-              key={"C"}
-              id={"C"}
-              label={minimal ? undefined : `Column ${"C"}`}
-              columns={columns}
-              items={items["C"]}
-              scrollable={scrollable}
-              style={containerStyle}
-              unstyled={minimal}
-            >
-                {items["C"].map((value, index) => {
-                  return (
-                    <DraggableItem
-                      disabled={isSortingContainer}
-                      key={value}
-                      id={value}
-                      index={index}
-                      handle={handle}
-                      style={getItemStyles}
-                      wrapperStyle={wrapperStyle}
-                      renderItem={renderItem}
-                      containerId={"C"}
-                      getIndex={getIndex}
-                    />
-                  );
-                })}
-            </DroppableContainer>
-            <DroppableContainer
-              key={"D"}
-              id={"D"}
-              label={minimal ? undefined : `Column ${"D"}`}
-              columns={columns}
-              items={items["D"]}
-              scrollable={scrollable}
-              style={containerStyle}
-              unstyled={minimal}
-            >
-              <SortableContext items={items["D"]} strategy={strategy}>
-                {items["D"].map((value, index) => {
-                  return (
-                    <SortableItem
-                      disabled={isSortingContainer}
-                      key={value}
-                      id={value}
-                      index={index}
-                      handle={handle}
-                      style={getItemStyles}
-                      wrapperStyle={wrapperStyle}
-                      renderItem={renderItem}
-                      containerId={"D"}
-                      getIndex={getIndex}
-                    />
-                  );
-                })}
-              </SortableContext>
-            </DroppableContainer>
+          <DroppableContainer
+            key={"C"}
+            id={"C"}
+            label={minimal ? undefined : `Column ${"C"}`}
+            columns={columns}
+            items={items["C"]}
+            scrollable={scrollable}
+            style={containerStyle}
+            unstyled={minimal}
+          >
+            {items["C"].map((value, index) => {
+              return (
+                <DraggableItem
+                  disabled={isSortingContainer}
+                  key={value}
+                  id={value}
+                  index={index}
+                  handle={handle}
+                  style={getItemStyles}
+                  wrapperStyle={wrapperStyle}
+                  renderItem={renderItem}
+                  containerId={"C"}
+                  getIndex={getIndex}
+                />
+              );
+            })}
+          </DroppableContainer>
+          <DroppableContainer
+            key={"D"}
+            id={"D"}
+            label={minimal ? undefined : `Column ${"D"}`}
+            columns={columns}
+            items={items["D"]}
+            scrollable={scrollable}
+            style={containerStyle}
+            unstyled={minimal}
+          >
+            <SortableContext items={items["D"]} strategy={strategy}>
+              {items["D"].map((value, index) => {
+                return (
+                  <SortableItem
+                    disabled={isSortingContainer}
+                    key={value}
+                    id={value}
+                    index={index}
+                    handle={handle}
+                    style={getItemStyles}
+                    wrapperStyle={wrapperStyle}
+                    renderItem={renderItem}
+                    containerId={"D"}
+                    getIndex={getIndex}
+                  />
+                );
+              })}
+            </SortableContext>
+          </DroppableContainer>
         </SortableContext>
       </div>
 
@@ -396,5 +416,4 @@ export function MultipleContainers({
       </Container>
     );
   }
-
 }

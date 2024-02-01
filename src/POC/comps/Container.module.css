@@ -1,5 +1,4 @@
 .Container {
-
   display: flex;
   flex-direction: column;
   grid-auto-rows: max-content;

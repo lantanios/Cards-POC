@@ -33,14 +33,26 @@ export const MultipleDecksPOC = () => {
   });
 
   useEffect(() => {
-    setIsMounted(true)
+    setIsMounted(true);
   }, []);
 
   return (
     <MultipleContainers
       strategy={rectSortingStrategy}
       items={decks}
-      renderItem={({ value, dragOverlay, dragging, sorting, index, listeners, ref, style, transform, transition, fadeIn }: any) => (
+      renderItem={({
+        value,
+        dragOverlay,
+        dragging,
+        sorting,
+        index,
+        listeners,
+        ref,
+        style,
+        transform,
+        transition,
+        fadeIn,
+      }: any) => (
         <PlayingCard
           value={value.substring(2, value.length)}
           isDragging={dragging}
@@ -60,15 +72,7 @@ export const MultipleDecksPOC = () => {
         position: "relative",
         flexShrink: 0,
         width: 330,
-        top: -100,
         margin: "20px 20px",
-      }}
-      getItemStyles={({ index, overIndex, isDragging, containerId, isDragOverlay }) => {
-        const deck = decks[containerId as keyof typeof decks] || [];
-
-        return {
-          zIndex: deck.length - index,
-        };
       }}
       minimal
     />
