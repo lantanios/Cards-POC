@@ -9,6 +9,8 @@ import { getColor } from "../../functions/itemsHelpers";
 export function DraggableItem({
   disabled,
   id,
+  title,
+  type,
   index,
   handle,
   renderItem,
@@ -19,6 +21,11 @@ export function DraggableItem({
   const { setNodeRef, setActivatorNodeRef, listeners, isDragging, transform } =
     useDraggable({
       id,
+      data: {
+        id,
+        type,
+        title
+      }
     });
   const mounted = useMountStatus();
   const mountedWhileDragging = isDragging && !mounted;
@@ -26,7 +33,7 @@ export function DraggableItem({
   return (
     <Item
       ref={disabled ? undefined : setNodeRef}
-      value={id}
+      value={title}
       dragging={false}
       handle={handle}
       handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
@@ -34,7 +41,7 @@ export function DraggableItem({
       wrapperStyle={wrapperStyle({ index })}
       style={style({
         index,
-        value: id,
+        value: title,
         isDragging: false,
         containerId,
       })}

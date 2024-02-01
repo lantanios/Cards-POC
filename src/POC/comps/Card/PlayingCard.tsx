@@ -49,53 +49,15 @@ export const PlayingCard = forwardRef<HTMLDivElement, Props>(
       background-color: #fff;
       box-shadow: 1px 1px 0 1px #f9f9fb, -1px 0 28px 0 rgba(34, 33, 81, 0.01),
         54px 54px 28px -10px rgba(34, 33, 81, 0.15);
-      border-radius: 24px;
-      font-size: 25px;
-      font-family: "Roboto Slab", Helvetica, sans-serif;
-      user-select: none;
-
-      &:hover:not(.pickedUp) {
-        --translate-x: 5px;
-      }
-
-      &:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px #4c9ffe, 1px 1px 0 1px #f9f9fb,
-          -1px 0 28px 0 rgba(34, 33, 81, 0.01);
-      }
-
-      & > sup,
-      sub {
-        position: absolute;
-        font-size: 17px;
-      }
-
-      & > strong {
-        position: relative;
-        left: -5px;
-        margin: 0 auto;
-        align-self: center;
-        font-size: 50px;
-      }
-
-      & > sup {
-        left: 20px;
-        top: 20px;
-      }
-
-      & > sub {
-        right: 20px;
-        bottom: 20px;
-      }
+      border: 1px solid black;
+      align-items: center;
+      justify-content: center;
     `;
 
-    console.log(style);
     return (
       <Card ref={ref}>
         <PlayingCard tabIndex={0} {...props}>
-          <sup>{value}</sup>
-          <strong>{value[value.length - 1]}</strong>
-          <sub>{value}</sub>
+          {value}
         </PlayingCard>
       </Card>
     );

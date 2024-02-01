@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   CancelDrop,
@@ -25,12 +25,11 @@ import {
 } from "@dnd-kit/sortable";
 import { coordinateGetter as multipleContainersCoordinateGetter } from "./multipleContainersKeyboardCoordinates";
 import { Item } from "./Item";
-import { Container } from "./Container";
-import { createRange } from "./createRange";
 import { DroppableContainer } from "./container/DropableContainer";
-import { getColor } from "../functions/itemsHelpers";
 import { SortableItem } from "./sortableItem/SortableItem";
 import { DraggableItem } from "./draggableItem/DraggableItem";
+import { IToolBox, toolItems } from "../functions/getDeckOfCards";
+import { nanoid } from "nanoid";
 
 const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
@@ -42,11 +41,9 @@ const dropAnimation: DropAnimation = {
   }),
 };
 
-type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
-
 interface Props {
   adjustScale?: boolean;
-  items?: Items;
+  items?: IToolBox[];
   renderItem?: any;
   containerStyle?: React.CSSProperties;
   minimal?: boolean;
@@ -74,7 +71,6 @@ interface Props {
 
 export function MultipleContainers({
   adjustScale = false,
-  itemCount = 3,
   cancelDrop,
   columns,
   handle = false,
@@ -90,20 +86,14 @@ export function MultipleContainers({
   vertical = false,
   scrollable,
 }: Props) {
-  const [items, setItems] = useState<Items>(
-    () =>
-      initialItems ?? {
-        D: createRange(itemCount, (index) => `D${index + 1}`),
-      }
+  const [items, setItems] = useState<IToolBox[]>([]);
+  const [active, setActive] = useState<IToolBox | null>(null);
+  const activeItem = useMemo(
+    () => items.find((item) => item.id === active?.id),
+    [active, items]
   );
-  const [containers, setContainers] = useState(
-    Object.keys(items) as UniqueIdentifier[]
-  );
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
-  const isSortingContainer = activeId ? containers.includes(activeId) : false;
 
-  const [clonedItems, setClonedItems] = useState<Items | null>(null);
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor),
@@ -111,13 +101,6 @@ export function MultipleContainers({
       coordinateGetter,
     })
   );
-  const findContainer = (id: UniqueIdentifier) => {
-    if (id in items) {
-      return id;
-    }
-
-    return Object.keys(items).find((key) => items[key].includes(id));
-  };
 
   const getIndex = (id: UniqueIdentifier) => {
     const container = findContainer(id);
@@ -126,21 +109,46 @@ export function MultipleContainers({
       return -1;
     }
 
-    const index = items[container].indexOf(id);
-
-    return index;
+    if (container === "D") {
+      return items.findIndex((item) => item.id === id);
+    } else {
+      return items.findIndex((item) => item.id === id);
+    }
   };
 
-  const onDragCancel = () => {
-    if (clonedItems) {
-      // Reset items to their original state in case items have been
-      // Dragged across containers
-      setItems(clonedItems);
+  const findContainer = (id: UniqueIdentifier) => {
+    return toolItems.find((item) => item.id === id) ? "C" : "D";
+  };
+
+  function handleDragEnd(event: any) {
+    const activeContainer = findContainer(event.active.id);
+    const overContainer = findContainer(event.over.id);
+
+    if (
+      event.over.id &&
+      event.active.id &&
+      overContainer !== "C" &&
+      activeContainer === overContainer
+    ) {
+      const activeIndex = items.findIndex(({ id }) => id === event.active.id);
+      const overIndex = items.findIndex(({ id }) => id === event.over.id);
+
+      setItems(arrayMove(items, activeIndex, overIndex));
+      return;
     }
 
-    setActiveId(null);
-    setClonedItems(null);
-  };
+    if (event.over) {
+      let newElements: any = [
+        ...items,
+        {
+          title: [event.active.data.current.title],
+          id: nanoid(10),
+          type: [event.active.data.current.type],
+        },
+      ];
+      setItems(newElements);
+    }
+  }
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -157,119 +165,10 @@ export function MultipleContainers({
         },
       }}
       onDragStart={({ active }) => {
-        setActiveId(active.id);
-        setClonedItems(items);
+        setActive(active.data.current as IToolBox);
       }}
-      onDragOver={({ active, over }) => {
-        const overId = over?.id;
-
-        if (
-          overId == null ||
-          active.id in items ||
-          overId.toString().includes("C")
-        ) {
-          return;
-        }
-        console.log("@#---over", over);
-        const overContainer = findContainer(overId);
-        const activeContainer = findContainer(active.id);
-
-        if (!overContainer || !activeContainer) {
-          return;
-        }
-
-        if (activeContainer !== overContainer) {
-          setItems((items) => {
-            const activeItems = items[activeContainer];
-            const overItems = items[overContainer];
-            const overIndex = overItems.indexOf(overId);
-            const activeIndex = activeItems.indexOf(active.id);
-
-            let newIndex: number;
-
-            if (overId in items) {
-              newIndex = overItems.length + 1;
-            } else {
-              const isBelowOverItem =
-                over &&
-                active.rect.current.translated &&
-                active.rect.current.translated.top >
-                  over.rect.top + over.rect.height;
-
-              const modifier = isBelowOverItem ? 1 : 0;
-
-              newIndex =
-                overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
-            }
-
-            recentlyMovedToNewContainer.current = true;
-
-            return {
-              ...items,
-              [activeContainer]: items[activeContainer].filter(
-                (item) => item !== active.id
-              ),
-              [overContainer]: [
-                ...items[overContainer].slice(0, newIndex),
-                items[activeContainer][activeIndex],
-                ...items[overContainer].slice(
-                  newIndex,
-                  items[overContainer].length
-                ),
-              ],
-            };
-          });
-        }
-      }}
-      onDragEnd={({ active, over }) => {
-        if (over?.id === "C") {
-          return;
-        }
-        if (active.id in items && over?.id) {
-          setContainers((containers) => {
-            const activeIndex = containers.indexOf(active.id);
-            const overIndex = containers.indexOf(over.id);
-
-            return arrayMove(containers, activeIndex, overIndex);
-          });
-        }
-
-        const activeContainer = findContainer(active.id);
-
-        if (!activeContainer) {
-          setActiveId(null);
-          return;
-        }
-
-        const overId = over?.id;
-
-        if (overId == null) {
-          setActiveId(null);
-          return;
-        }
-
-        const overContainer = findContainer(overId);
-
-        if (overContainer) {
-          const activeIndex = items[activeContainer].indexOf(active.id);
-          const overIndex = items[overContainer].indexOf(overId);
-
-          if (activeIndex !== overIndex) {
-            setItems((items) => ({
-              ...items,
-              [overContainer]: arrayMove(
-                items[overContainer],
-                activeIndex,
-                overIndex
-              ),
-            }));
-          }
-        }
-
-        setActiveId(null);
-      }}
+      onDragEnd={handleDragEnd}
       cancelDrop={cancelDrop}
-      onDragCancel={onDragCancel}
       modifiers={modifiers}
     >
       <div
@@ -293,24 +192,24 @@ export function MultipleContainers({
             id={"C"}
             label={minimal ? undefined : `Column ${"C"}`}
             columns={columns}
-            items={items["C"]}
+            items={toolItems}
             scrollable={scrollable}
             style={containerStyle}
             unstyled={minimal}
           >
-            {items["C"].map((value, index) => {
+            {toolItems.map((item, index) => {
               return (
                 <DraggableItem
-                  disabled={isSortingContainer}
-                  key={value}
-                  id={value}
+                  key={item.id}
+                  id={item.id}
+                  title={item.title}
+                  type={item.type}
                   index={index}
                   handle={handle}
                   style={getItemStyles}
                   wrapperStyle={wrapperStyle}
                   renderItem={renderItem}
-                  containerId={"C"}
-                  getIndex={getIndex}
+                  containerId="C"
                 />
               );
             })}
@@ -320,25 +219,25 @@ export function MultipleContainers({
             id={"D"}
             label={minimal ? undefined : `Column ${"D"}`}
             columns={columns}
-            items={items["D"]}
+            items={items}
             scrollable={scrollable}
             style={containerStyle}
             unstyled={minimal}
           >
-            <SortableContext items={items["D"]} strategy={strategy}>
-              {items["D"].map((value, index) => {
+            <SortableContext items={items} strategy={strategy}>
+              {items.map((item, index) => {
                 return (
                   <SortableItem
-                    disabled={isSortingContainer}
-                    key={value}
-                    id={value}
+                    key={item.id}
+                    id={item.id}
                     index={index}
+                    title={item.title}
+                    type={item.type}
                     handle={handle}
                     style={getItemStyles}
                     wrapperStyle={wrapperStyle}
                     renderItem={renderItem}
                     containerId={"D"}
-                    getIndex={getIndex}
                   />
                 );
               })}
@@ -350,70 +249,31 @@ export function MultipleContainers({
       {/* this just makes the effect of the card being over all the others */}
       {createPortal(
         <DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
-          {activeId
-            ? containers.includes(activeId)
-              ? renderContainerDragOverlay(activeId)
-              : renderSortableItemDragOverlay(activeId)
-            : null}
+          {active ? renderSortableItemDragOverlay(active) : null}
         </DragOverlay>,
         document.body
       )}
     </DndContext>
   );
 
-  function renderSortableItemDragOverlay(id: UniqueIdentifier) {
+  function renderSortableItemDragOverlay(active: IToolBox) {
     return (
       <Item
-        value={id}
+        value={active.title}
         handle={handle}
         style={getItemStyles({
-          containerId: findContainer(id) as UniqueIdentifier,
+          containerId: "D",
           overIndex: -1,
-          index: getIndex(id),
-          value: id,
+          index: getIndex(active.id),
+          value: active.title,
           isSorting: true,
           isDragging: true,
           isDragOverlay: true,
         })}
-        color={getColor(id)}
         wrapperStyle={wrapperStyle({ index: 0 })}
         renderItem={renderItem}
         dragOverlay
       />
-    );
-  }
-
-  function renderContainerDragOverlay(containerId: UniqueIdentifier) {
-    return (
-      <Container
-        label={`Column ${containerId}`}
-        columns={columns}
-        style={{
-          height: "100%",
-        }}
-        shadow
-        unstyled={false}
-      >
-        {items[containerId].map((item, index) => (
-          <Item
-            key={item}
-            value={item}
-            handle={handle}
-            style={getItemStyles({
-              containerId,
-              overIndex: -1,
-              index: getIndex(item),
-              value: item,
-              isDragging: false,
-              isSorting: false,
-              isDragOverlay: false,
-            })}
-            color={getColor(item)}
-            wrapperStyle={wrapperStyle({ index })}
-            renderItem={renderItem}
-          />
-        ))}
-      </Container>
     );
   }
 }

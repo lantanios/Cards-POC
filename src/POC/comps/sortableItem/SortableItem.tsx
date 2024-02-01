@@ -3,15 +3,17 @@ import { Item } from "../Item";
 import { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { getColor } from "../../functions/itemsHelpers";
+import { IToolBox } from "../../functions/getDeckOfCards";
 
 export interface SortableItemProps {
   containerId: UniqueIdentifier;
   id: UniqueIdentifier;
+  title: string,
+  type: string
   index: number;
   handle: boolean;
   disabled?: boolean;
   style(args: any): React.CSSProperties;
-  getIndex(id: UniqueIdentifier): number;
   renderItem(): React.ReactElement;
   wrapperStyle({ index }: { index: number }): React.CSSProperties;
 }
@@ -19,12 +21,13 @@ export interface SortableItemProps {
 export function SortableItem({
   disabled,
   id,
+  title,
+  type,
   index,
   handle,
   renderItem,
   style,
   containerId,
-  getIndex,
   wrapperStyle,
 }: SortableItemProps) {
   const {
@@ -33,12 +36,15 @@ export function SortableItem({
     listeners,
     isDragging,
     isSorting,
-    over,
-    overIndex,
     transform,
     transition,
   } = useSortable({
     id,
+    data: {
+      id,
+      title,
+      type
+    }
   });
   const mounted = useMountStatus();
   const mountedWhileDragging = isDragging && !mounted;
@@ -46,7 +52,7 @@ export function SortableItem({
   return (
     <Item
       ref={disabled ? undefined : setNodeRef}
-      value={id}
+      value={title}
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
@@ -55,10 +61,9 @@ export function SortableItem({
       wrapperStyle={wrapperStyle({ index })}
       style={style({
         index,
-        value: id,
+        value: title,
         isDragging,
         isSorting,
-        overIndex: over ? getIndex(over.id) : overIndex,
         containerId,
       })}
       color={getColor(id)}

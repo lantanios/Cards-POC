@@ -1,36 +1,30 @@
 import { useEffect, useState } from "react";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 import { MultipleContainers } from "./comps/MultipleContainers";
-import { PlayingCard } from "./comps/PlayingCard";
-import { getDeckOfCards } from "./functions/getDeckOfCards";
+import { PlayingCard } from "./comps/Card/PlayingCard";
+import { UniqueIdentifier } from "@dnd-kit/core";
+import { nanoid } from "nanoid";
+import { toolItems } from "./functions/getDeckOfCards";
 
 function stringifyDeck(
   deck: {
     value: string;
     suit: string;
+    id: UniqueIdentifier
   }[],
-  prefix: string
+  prefix: string,
+  id: UniqueIdentifier
 ) {
-  return deck.map(({ suit, value }) => `${prefix}-${value}${suit}`);
+  return deck.map(({ suit, value, id }) => {
+    return {
+      value:`${prefix}-${value}${suit}`,
+      id: id
+    }
+  });
 }
 
 export const MultipleDecksPOC = () => {
   const [isMounted, setIsMounted] = useState(false);
-  const [decks] = useState(() => {
-    // here we put the deck in a state but its just a try so we don't want the 52 cards so we only get 13 of the same colors
-    const deck = getDeckOfCards();
-    // const deckA = deck.slice(0, 13);
-    // const deckB = deck.slice(13, 26);
-    const deckC = deck.slice(26, 39);
-    // const deckD = deck.slice(39, 52);
-
-    return {
-      // A: stringifyDeck(deckA, "A"),
-      // B: stringifyDeck(deckB, "B"),
-      C: stringifyDeck(deckC, "C"),
-      D: [], // stringifyDeck(deckD, 'D'),
-    };
-  });
 
   useEffect(() => {
     setIsMounted(true);
@@ -39,7 +33,7 @@ export const MultipleDecksPOC = () => {
   return (
     <MultipleContainers
       strategy={rectSortingStrategy}
-      items={decks}
+      items={toolItems}
       renderItem={({
         value,
         dragOverlay,
@@ -54,7 +48,7 @@ export const MultipleDecksPOC = () => {
         fadeIn,
       }: any) => (
         <PlayingCard
-          value={value.substring(2, value.length)}
+          value={value}
           isDragging={dragging}
           isPickedUp={dragOverlay}
           isSorting={sorting}
