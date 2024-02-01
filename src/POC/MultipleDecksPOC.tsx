@@ -2,26 +2,8 @@ import { useEffect, useState } from "react";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
 import { MultipleContainers } from "./comps/MultipleContainers";
 import { PlayingCard } from "./comps/Card/PlayingCard";
-import { UniqueIdentifier } from "@dnd-kit/core";
-import { nanoid } from "nanoid";
 import { toolItems } from "./functions/getStarterItems";
 
-function stringifyDeck(
-  deck: {
-    value: string;
-    suit: string;
-    id: UniqueIdentifier
-  }[],
-  prefix: string,
-  id: UniqueIdentifier
-) {
-  return deck.map(({ suit, value, id }) => {
-    return {
-      value:`${prefix}-${value}${suit}`,
-      id: id
-    }
-  });
-}
 
 export const MultipleDecksPOC = () => {
   const [isMounted, setIsMounted] = useState(false);
