@@ -28,7 +28,7 @@ import { Item } from "./Item";
 import { DroppableContainer } from "./container/DropableContainer";
 import { SortableItem } from "./sortableItem/SortableItem";
 import { DraggableItem } from "./draggableItem/DraggableItem";
-import { IToolBox, toolItems } from "../functions/getDeckOfCards";
+import { IToolBox, toolItems } from "../functions/getStarterItems";
 import { nanoid } from "nanoid";
 
 const dropAnimation: DropAnimation = {

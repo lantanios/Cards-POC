@@ -3,7 +3,7 @@ import { Item } from "../Item";
 import { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { getColor } from "../../functions/itemsHelpers";
-import { IToolBox } from "../../functions/getDeckOfCards";
+import { IToolBox } from "../../functions/getStarterItems";
 
 export interface SortableItemProps {
   containerId: UniqueIdentifier;

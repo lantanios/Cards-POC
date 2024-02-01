@@ -4,7 +4,7 @@ import { MultipleContainers } from "./comps/MultipleContainers";
 import { PlayingCard } from "./comps/Card/PlayingCard";
 import { UniqueIdentifier } from "@dnd-kit/core";
 import { nanoid } from "nanoid";
-import { toolItems } from "./functions/getDeckOfCards";
+import { toolItems } from "./functions/getStarterItems";
 
 function stringifyDeck(
   deck: {
