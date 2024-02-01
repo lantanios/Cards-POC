@@ -135,8 +135,6 @@ export const TRASH_ID = "void";
 const PLACEHOLDER_ID = "placeholder";
 const empty: UniqueIdentifier[] = [];
 
-const { g1: pab } = { g1: 1 };
-console.log("@#---initialItems", pab);
 export function MultipleContainers({
   adjustScale = false,
   itemCount = 3,

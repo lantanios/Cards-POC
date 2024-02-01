@@ -63,7 +63,7 @@ export const MultipleDecksPOC = () => {
       // A: stringifyDeck(deckA, "A"),
       // B: stringifyDeck(deckB, "B"),
       C: stringifyDeck(deckC, "C"),
-      D: [], // stringifyDeck(deckD, 'D'),
+      D: [''], // stringifyDeck(deckD, 'D'),
     };
   });
 
