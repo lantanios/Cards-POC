@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   CancelDrop,
@@ -17,19 +17,15 @@ import {
   defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
   arrayMove,
-  verticalListSortingStrategy,
   SortingStrategy,
-  horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { coordinateGetter as multipleContainersCoordinateGetter } from "./multipleContainersKeyboardCoordinates";
 import { Item } from "./Item";
-import { DroppableContainer } from "./container/DropableContainer";
-import { SortableItem } from "./sortableItem/SortableItem";
-import { DraggableItem } from "./draggableItem/DraggableItem";
 import { IToolBox, toolItems } from "../functions/getStarterItems";
 import { nanoid } from "nanoid";
+import WebsitePage from "./WebsitePage/WebsitePage";
+import ElementsList from "./ElementsList/ElementsList";
 
 const dropAnimation: DropAnimation = {
   sideEffects: defaultDropAnimationSideEffects({
@@ -41,7 +37,7 @@ const dropAnimation: DropAnimation = {
   }),
 };
 
-interface Props {
+export interface IContainersProps {
   adjustScale?: boolean;
   items?: IToolBox[];
   renderItem?: any;
@@ -74,24 +70,17 @@ export function MultipleContainers({
   cancelDrop,
   columns,
   handle = false,
-  items: initialItems,
-  containerStyle,
   coordinateGetter = multipleContainersCoordinateGetter,
   getItemStyles = () => ({}),
   wrapperStyle = () => ({}),
   minimal = false,
   modifiers,
   renderItem,
-  strategy = verticalListSortingStrategy,
   vertical = false,
   scrollable,
-}: Props) {
+}: IContainersProps) {
   const [items, setItems] = useState<IToolBox[]>([]);
   const [active, setActive] = useState<IToolBox | null>(null);
-  const activeItem = useMemo(
-    () => items.find((item) => item.id === active?.id),
-    [active, items]
-  );
   const recentlyMovedToNewContainer = useRef(false);
 
   const sensors = useSensors(
@@ -137,6 +126,10 @@ export function MultipleContainers({
       return;
     }
 
+    if (overContainer === "C") {
+      return;
+    }
+
     if (event.over) {
       let newElements: any = [
         ...items,
@@ -179,71 +172,25 @@ export function MultipleContainers({
           gridAutoFlow: vertical ? "row" : "column",
         }}
       >
-        <SortableContext
-          items={["D"]}
-          strategy={
-            vertical
-              ? verticalListSortingStrategy
-              : horizontalListSortingStrategy
-          }
-        >
-          <DroppableContainer
+          <ElementsList
+            minimal={minimal}
             key={"C"}
-            id={"C"}
-            label={minimal ? undefined : `Column ${"C"}`}
             columns={columns}
-            items={toolItems}
             scrollable={scrollable}
-            style={containerStyle}
-            unstyled={minimal}
-          >
-            {toolItems.map((item, index) => {
-              return (
-                <DraggableItem
-                  key={item.id}
-                  id={item.id}
-                  title={item.title}
-                  type={item.type}
-                  index={index}
-                  handle={handle}
-                  style={getItemStyles}
-                  wrapperStyle={wrapperStyle}
-                  renderItem={renderItem}
-                  containerId="C"
-                />
-              );
-            })}
-          </DroppableContainer>
-          <DroppableContainer
+            handle={handle}
+            wrapperStyle={wrapperStyle}
+            renderItem={renderItem}
+          />
+          <WebsitePage
+            minimal={minimal}
             key={"D"}
-            id={"D"}
-            label={minimal ? undefined : `Column ${"D"}`}
             columns={columns}
             items={items}
             scrollable={scrollable}
-            style={containerStyle}
-            unstyled={minimal}
-          >
-            <SortableContext items={items} strategy={strategy}>
-              {items.map((item, index) => {
-                return (
-                  <SortableItem
-                    key={item.id}
-                    id={item.id}
-                    index={index}
-                    title={item.title}
-                    type={item.type}
-                    handle={handle}
-                    style={getItemStyles}
-                    wrapperStyle={wrapperStyle}
-                    renderItem={renderItem}
-                    containerId={"D"}
-                  />
-                );
-              })}
-            </SortableContext>
-          </DroppableContainer>
-        </SortableContext>
+            handle={handle}
+            wrapperStyle={wrapperStyle}
+            renderItem={renderItem}
+          />
       </div>
 
       {/* this just makes the effect of the card being over all the others */}
