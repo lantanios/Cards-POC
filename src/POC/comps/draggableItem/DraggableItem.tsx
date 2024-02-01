@@ -4,7 +4,6 @@ import {
   useMountStatus,
 } from "../sortableItem/SortableItem";
 import { Item } from "../Item";
-import { getColor } from "../../functions/itemsHelpers";
 
 export function DraggableItem({
   disabled,
@@ -45,7 +44,6 @@ export function DraggableItem({
         isDragging: false,
         containerId,
       })}
-      color={getColor(id)}
       transform={transform}
       fadeIn={mountedWhileDragging}
       listeners={listeners}

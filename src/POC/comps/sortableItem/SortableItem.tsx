@@ -2,8 +2,6 @@ import { UniqueIdentifier } from "@dnd-kit/core";
 import { Item } from "../Item";
 import { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
-import { getColor } from "../../functions/itemsHelpers";
-import { IToolBox } from "../../functions/getStarterItems";
 
 export interface SortableItemProps {
   containerId: UniqueIdentifier;
@@ -66,7 +64,6 @@ export function SortableItem({
         isSorting,
         containerId,
       })}
-      color={getColor(id)}
       transition={transition}
       transform={transform}
       fadeIn={mountedWhileDragging}
